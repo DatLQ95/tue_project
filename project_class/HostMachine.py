@@ -1,5 +1,5 @@
 import simpy
-from ServerLink import ServerLink
+from .ServerLink import ServerLink
 
 class HostMachine():
     def __init__(self, env, cpu, memory, storage, index, in_link, out_link, bw):
@@ -13,8 +13,10 @@ class HostMachine():
         self.env = env
         self.active = True
         self.bandwidth = bw
-        self.LinkServers = []
-    
+        self.delay_link = 10
+        self.LinkServers = [ServerLink(env=self.env, in_link=self.in_link, out_link=self.out_link, index=i, host_index = self.index, delay_link=self.delay_link) for i in range(self.bandwidth)]
+        
+
     def deploy_application(self):
         #deploy the application
         pass
@@ -34,7 +36,3 @@ class HostMachine():
 
     def set_active(self):
         self.active = True
-
-    def run(self):
-        self.LinkServers = [ServerLink(env=self.env, in_pipe=self.in_link, out_pipe=self.out_link, index=i, host_index = self.index) for i in range(self.bandwidth)]
-        pass
