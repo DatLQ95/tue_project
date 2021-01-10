@@ -1,27 +1,23 @@
-from .Packet import Packet
+import simpy
 import random
 from .simulation_settings import random_seed
+from .Packet import Packet
 
-class User():
-    # initial with parameters:
-    def __init__(self, env, out_link, in_link, index, application_process_time, ip_src, ip_dst):
+class DataGenerator():
+    def __init__(self, env, out_link, index, application_process_time):
         random.seed(random_seed())
         self.env = env
         self.out_link = out_link
-        self.in_link = in_link
+        self.in_link = simpy.FilterStore(self.env)
         self.index = index
         self.action = env.process(self.run())
         self.request = Packet()
         self.application_process_time = application_process_time
-        self.ip_src = ip_src
-        self.ip_dst = ip_dst
 
     #prepare the request to send
     def prepare_request(self):
         processing_time = random.expovariate(1/self.application_process_time)
         arrival_time = self.env.now
-        self.request.packet_set_src(self.ip_src)
-        self.request.packet_set_dst(self.ip_dst)
         self.request.packet_set_processing_time(processing_time)
         self.request.packet_set_index(self.index)
         self.request.packet_set_arrival_time(arrival_time)
@@ -36,6 +32,9 @@ class User():
         print("return start time" + str(response.packet_get_arrival_time()))
         print("return " + str(response_time))
         # response_times.append(response_time)
+
+    def get_in_link(self):
+        return self.in_link
 
     def run(self):
         # while True:

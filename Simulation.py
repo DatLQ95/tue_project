@@ -1,43 +1,45 @@
 from project_class.HostMachine import HostMachine
-from project_class.UserBehavior import UserBehavior
+from project_class.UserBehavior import UserWebserver
+from project_class.Link import Link
+from project_class.ApplicationWebServer import ApplicationWebServer
+from project_class.simulation_settings import return_web_server_ip_address
+from project_class.simulation_settings import return_web_server_user_ip_address
+
 import simpy
 
 class Simulation():
     def __init__(self):
         # init the environment 
-
         self.environment = simpy.Environment()
-        # link1=simpy.Store(environment)
-        # init the links
-        self.link_0_to_1=simpy.FilterStore(self.environment)
-        self.link_1_to_2=simpy.FilterStore(self.environment)
-        self.link_2_to_3=simpy.FilterStore(self.environment)
-        self.link_3_to_0=simpy.FilterStore(self.environment)
-        # init the host
-        # connect the host and links
-        self.host0 = HostMachine(env=self.environment, cpu=20, memory=100, storage=200, index=0, in_link=self.link_3_to_0, out_link=self.link_0_to_1, bw=1)
 
-        self.host1 = HostMachine(env=self.environment, cpu=20, memory=100, storage=200, index=1, in_link=self.link_0_to_1, out_link=self.link_1_to_2, bw=1)
 
-        self.host2 = HostMachine(env=self.environment, cpu=20, memory=100, storage=200, index=2, in_link=self.link_1_to_2, out_link=self.link_2_to_3, bw=1)
+        # init the network:
+        #TODO: create links, WSS1, Buffer, Interface, Combiner, Source
+        # Run control packet init
 
-        self.host3 = HostMachine(env=self.environment, cpu=20, memory=100, storage=200, index=3, in_link=self.link_2_to_3, out_link=self.link_3_to_0, bw=1)
+        
+        
 
-        self.user0 = UserBehavior(env= self.environment, user_number= 100, application=20, out_link= self.link_0_to_1, in_link=self.link_3_to_0, host_index=0)
-
-        # host = [HostMachine(cpu=20, memory=100, storage=200, index=i, ) for i in range(4)]
-        # host[0].get_status()
-        # host[1].get_status()
-        # 
-        # self.user0 = UserBehavior()
-
-    # def host1pinghost3(self):
-    #     UserBehavior = UserBehavior()
-
-    def deploy_app():
+    #TODO: : init the whole optical parts of the network:
+    def init_network(self):
+        # TODO: create nodes: 
         pass
 
-    def deploy_user(self):
+    #TODO: parameters: which application and which host machine to deploy! 
+    def deploy_app(self):
+        #FIXME: Test to deploy web server to host 3!
+        self.app_web_server = ApplicationWebServer(env= self.environment, host_index= 2, out_link= self.host[2].HostMachine_get_out_link(), ip_address= return_web_server_ip_address())
+
+        self.host_2.HostMachine_deploy_application(self.app_web_server.ApplicationWebServer_get_ip_address())
+
+        self.user_web_server = UserWebserver(env= self.environment, user_number=1, out_link=self.link_0_1_0, host_index=0, ip_address=return_web_server_user_ip_address(), server_ip= self.app_web_server.ApplicationWebServer_get_ip_address())
+
+        self.host_0.HostMachine_deploy_application(self.user_web_server.UserWebServer_get_ip_address())
+
+        pass
+
+    def deploy_user(self):   
+        
         pass
 
     def resume_simulation():
@@ -53,10 +55,15 @@ class Simulation():
         pass
 
     def simulation_run(self):
-        self.environment.run(10000)
+        self.environment.run(200)
 
     # if __name__ == '__main__':
     #     main()
+    
+# user = UserBehavior()
 
 simulation = Simulation()
+
+# simulation.deploy_user(user)
+
 simulation.simulation_run()

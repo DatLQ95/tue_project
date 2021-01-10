@@ -10,8 +10,14 @@ class Packet():
     def packet_get_dst(self):
         return self.dst
 
+    def packet_set_dst(self, dst):
+        self.dst = dst
+
     def packet_get_src(self):
         return self.src
+    
+    def packet_set_src(self, src):
+        self.src = src
 
     def packet_get_application(self):
         return self.application

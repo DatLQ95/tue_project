@@ -1,38 +1,38 @@
+import simpy
+import random
+from .Packet import Packet
+from .simulation_settings import random_seed
+
 class Server():
-    def __init__(self, env, in_pipe, out_pipe, index):
+    def __init__(self, env, out_link, index, ip_address, in_link, processing_time):
+        random.seed(random_seed())
         self.env = env
-        self.out_pipe = out_pipe
-        self.in_pipe = in_pipe
+        self.out_link = out_link
         self.processing_time = 0
-        self.request = dict()
-        self.response = dict()
+        self.request = Packet()
         self.index = index
         self.action = env.process(self.run())
+        self.in_link = in_link
+        self.active = True
+        self.ip_address = ip_address
+        self.process_time = random.expovariate(1/processing_time)
 
-    #prepare the request to send
+    def webServer_get_in_link(self):
+        return self.in_link
+
     def process_request(self):
         pass
-        # self.processing_time = self.request[1]
-        # arrival_time = self.request[3]
-        # waiting_time = self.env.now - arrival_time
-        # waiting_times.append(waiting_time)
-        # queue_length = len(self.in_pipe.items)
-        # queue_lengths.append(queue_length)
-
-    # send the request:
-    # def prepare_response(self):
-    #     yield self.env.timeout(self.processing_time)
-
-    def send_response(self):
+        
+    def send_response(self, out_link, response):
+        out_link.put(response)
         pass
-        # self.response = self.request
-        # self.out_pipe.put(self.response)
 
     def run(self):
-        pass
-        # while True:
-        #     #wait for request:
-        #     self.request = yield self.in_pipe.get()
-        #     self.process_request()
-        #     yield self.env.timeout(self.processing_time)
-        #     self.send_response()
+        while (self.active):
+            #wait for request:
+            print("in web server " + str(self.link_index))
+            self.request = yield self.in_link.get()
+            yield self.env.timeout(self.process_time)
+            print("in web server time " + str(self.env.now))
+            self.send_response(out_link=self.out_link, response=self.request)
+        

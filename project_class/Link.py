@@ -1,8 +1,18 @@
-class Link():
-    def __init__(self, bw, mean_delay, var_delay):
-        self.bandwidth = bw
-        self.mean_delay = mean_delay
-        self.variation_delay = var_delay
+import simpy
 
-    def transmit_delay_add():
-        
+class Link(object):
+    """This class represents the propagation through a optical link."""
+    def __init__(self, env, delay):
+        self.env = env
+        self.delay = delay
+        self.store = simpy.Store(env)
+
+    def latency(self, value):
+        yield self.env.timeout(self.delay)
+        self.store.put(value)
+
+    def put(self, value):
+        self.env.process(self.latency(value))
+
+    def get(self):
+        return self.store.get()
