@@ -1,24 +1,39 @@
 from .Packet import Packet
 
 class Buffer():
-    def __init__(self, env, SC_link_in, links_from_EC, links_to_Combiner, SC_link_out):
+    def __init__(self, env, SC_link_in, links_from_EC, links_to_Combiner, SC_link_out, node_index):
         self.env = env
+        self.node_index = node_index
         self.SC_link_in = SC_link_in
         self.SC_link_out = SC_link_out
         self.links_to_Combiner = links_to_Combiner
         self.links_from_EC = links_from_EC
         self.active = True
-
+        self.get_packet_instance = [env.process(self.data_packet_handler(data_in_link=i)) for i in self.links_from_EC]
 
     def send_control_packets(self):
         # send 100 control packets
         pass
 
-    def data_packet_handler(self):
+    def send_data(self, data_links_out, packet):
+        data_links_out.put(packet)
+        pass
+
+    # #prepare the request to send
+    def process_request(self, packet):
+        print("in Buffer " +str(self.node_index))
+        self.send_data(data_links_out=self.links_to_Combiner[0], packet=packet)
+    
+
+    def data_packet_handler(self, data_in_link):
         """
         send the packet arrival to the buffer
         """
-        pass
+        while (self.active):
+            # wait for request:
+            request = yield data_in_link.get()
+            self.process_request(packet= request)
+
 
     def control_packet_handler(self):
         """
@@ -27,5 +42,8 @@ class Buffer():
         send the data via wavelength assignment
         """
         pass
+
+    
+
 
     

@@ -28,17 +28,11 @@ def return_web_server_user_ip_address():
 Nodes = 4
 Channel = 4
 load = 0.5
-TRx_count = 2
+TRx_count = 4
 
-delay_combiner_to_next_WSS1 = 100
-delay_WSS1_to_Combiner = 0.43
-delay_WSS1_to_Interface = 0.015
-delay_WSS1_to_Buffer = 0.015
-delay_Buffer_to_Combiner = 0.015
-delay_EC_to_Buffer = 0
-delay_Interface_to_EC = 0
+
 time_slot = 1
-number_control_packets = delay_combiner_to_next_WSS1/time_slot
+# number_control_packets = delay_combiner_to_next_WSS1/time_slot
 
 # buffer[*].timeSlot = 2us
 # buffer[*].guardtime = 0.05us
@@ -56,35 +50,14 @@ number_control_packets = delay_combiner_to_next_WSS1/time_slot
 # Interface[*].source_count = 1
 
 class optical_params():
-    def __init__(self):
+    def __init__(self= None):
         pass
         
-    def get_node_number():
+    def get_node_number(self=None):
         return Nodes
     
-    def get_channel_number():
+    def get_channel_number(self=None):
         return Channel
 
-    def get_TRx_number():
+    def get_TRx_number(self=None):
         return TRx_count
-    
-    def get_delay_combiner_to_next_WSS1():
-        return delay_combiner_to_next_WSS1
-    
-    def get_delay_WSS1_to_Combiner():
-        return delay_WSS1_to_Combiner
-
-    def get_delay_WSS1_to_Interface():
-        return delay_WSS1_to_Interface
-
-    def get_delay_WSS1_to_Buffer():
-        return delay_WSS1_to_Buffer
-
-    def get_delay_Buffer_to_Combiner():
-        return delay_Buffer_to_Combiner
-
-    def get_delay_EC_to_Buffer():
-        return delay_EC_to_Buffer
-
-    def get_delay_Interface_to_EC():
-        return delay_Interface_to_EC

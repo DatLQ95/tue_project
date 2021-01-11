@@ -1,10 +1,9 @@
 class Packet():
-    def __init__(self, dst = None, src = None, app = None, processing_time = None, index = None, arrival_time =None):
+    def __init__(self, dst = None, src = None, app = None, index = None, arrival_time =None):
         self.dst = dst
         self.src = src
         self.application = app
         self.arrival_time = arrival_time
-        self.processing_time = processing_time
         self.index = index
 
     def packet_get_dst(self):
