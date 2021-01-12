@@ -25,9 +25,9 @@ class EdgeComputing():
     # #prepare the request to send
     def process_request(self, request):
         if(request.packet_get_dst() == self.node_index):
-            print("Got it bro!!!")
+            # print("Got it bro!!!")
             time_taken = self.env.now - request.packet_get_arrival_time()
-            print(time_taken)
+            # print(time_taken)
     
     def send_packet(self, data_link_out):
         yield self.env.timeout(250)

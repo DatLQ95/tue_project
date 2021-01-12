@@ -14,12 +14,13 @@ class Interface():
     # #prepare the request to send
     def process_request(self, packet):
         # redefine the RX to EC here!!!
-        print("In Interface")
+        # print("In Interface")
         if(packet.packet_get_dst() == self.node_index):
-            print("Send to EC")
+            # print("Send to EC")
             self.send_data(data_links_out=self.links_to_EC[0], packet=packet)
         else: 
-            print("Fail here ")
+            # print("Fail here ")
+            pass
     
 
     def data_packet_handler(self, data_in_link):

@@ -14,7 +14,7 @@ class Buffer():
         self.links_from_EC = links_from_EC
         self.active = True
         self.packet_loss = 0
-        self.TX_buffers = [queue.Queue(maxsize=optical_params.get_buffer_capacity()) for i in range(optical_params.get_TRx_number())]
+        self.TX_buffers = [list() for i in range(optical_params.get_TRx_number())]
         self.get_packet_instance = [env.process(self.data_packet_handler(data_in_link=self.links_from_EC[i], TX_buffer=self.TX_buffers[i])) for i in range(len(self.links_from_EC))]
         self.sendControlPackets = env.process(self.send_init_control_packets(data_link_out=self.SC_link_out))
         self.control_packet_handler_instance = env.process(self.control_packet_handler(SC_link_in=self.SC_link_in, SC_link_out=self.SC_link_out))
@@ -31,12 +31,12 @@ class Buffer():
             # wait for request:
             data_packet = yield data_in_link.get()
             # check if the length of the buffer is reached?
-            if(TX_buffer.qsize() > optical_params.get_buffer_capacity()):
+            if(len(TX_buffer) > optical_params.get_buffer_capacity()):
                 # if buffer is full then we increase packet loss
                 self.packet_loss = self.packet_loss + 1
             else: 
                 # put it into the buffer
-                TX_buffer.put(data_packet)
+                TX_buffer.append(data_packet)
                 # for te
                 # self.send_data(data_links_out=self.links_to_Combiner[0], packet=packet)
 
@@ -60,9 +60,9 @@ class Buffer():
         # sorting: 
         # TODO: finish this part and do slices / test in larger scale of the network
         buffer_dict = list()
-        print("SC buffer " + str(self.node_index))
+        # print("SC buffer " + str(self.node_index))
         for i in self.TX_buffers:
-            buffer_dict.append([i, i.qsize()])
+            buffer_dict.append([i, len(i)])
         buffer_dict.sort(reverse=True, key=lambda x: x[1])
         buffer_list = [buffer_dict[i][0] for i in range(len(buffer_dict))]
 
@@ -70,10 +70,11 @@ class Buffer():
         count = 0
         for i in range(len(dst_table)):
             if (dst_table[i] == -1):
-                if(not buffer_list[count].empty()):
+                # FIXME: test again later this:
+                if(len(buffer_list[count]) > 0):
                     # send the first item of buffer list here:
-                    print("send data")
-                    packet_send = buffer_list[count].get()
+                    # print("send data")
+                    packet_send = buffer_list[count].pop(0)
                     packet_send.packet_set_channel_index(i)
                     self.send_data(data_links_out=self.links_to_Combiner[i], packet=packet_send)
                     dst_table[i] = packet_send.packet_get_dst()

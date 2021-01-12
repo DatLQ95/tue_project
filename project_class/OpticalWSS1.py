@@ -20,12 +20,13 @@ class WSS1():
 
     # #prepare the request to send
     def process_request(self, packet):
-        print("in WSS1 " + str(self.node_index))
+        # print("in WSS1 " + str(self.node_index))
+        #FIXME: check number of RX to receive the packet:
         if(self.permit_to_send[packet.packet_get_channel_index()]):
-            print("send to Interface")
+            # print("send to Interface")
             self.send_data(data_links_out=self.links_to_Interface[packet.packet_get_channel_index()], packet=packet)
         else: 
-            print("send to combiner")
+            # print("send to combiner")
             self.send_data(data_links_out=self.links_to_Combiner[packet.packet_get_channel_index()], packet=packet)
     
 
