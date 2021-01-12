@@ -29,10 +29,10 @@ Nodes = 4
 Channel = 4
 load = 0.5
 TRx_count = 4
-
+buffer_capacity = 100
 
 time_slot = 1
-# number_control_packets = delay_combiner_to_next_WSS1/time_slot
+number_control_packets = 100
 
 # buffer[*].timeSlot = 2us
 # buffer[*].guardtime = 0.05us
@@ -61,3 +61,12 @@ class optical_params():
 
     def get_TRx_number(self=None):
         return TRx_count
+
+    def get_buffer_capacity(self= None):
+        return buffer_capacity
+
+    def get_number_control_packet(self= None):
+        return number_control_packets
+
+    def get_time_slot():
+        return time_slot

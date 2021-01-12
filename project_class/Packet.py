@@ -1,10 +1,8 @@
 class Packet():
-    def __init__(self, dst = None, src = None, app = None, index = None, arrival_time =None):
+    def __init__(self, dst = None, src = None, start_time =None):
         self.dst = dst
         self.src = src
-        self.application = app
-        self.arrival_time = arrival_time
-        self.index = index
+        self.start_time = start_time
 
     def packet_get_dst(self):
         return self.dst
@@ -18,17 +16,8 @@ class Packet():
     def packet_set_src(self, src):
         self.src = src
 
-    def packet_get_application(self):
-        return self.application
-
     def packet_get_arrival_time(self):
-        return self.arrival_time
-
-    def packet_get_processing_time(self):
-        return self.processing_time
-
-    def packet_get_index(self):
-        return self.index
+        return self.start_time
 
     def packet_set_processing_time(self, processing_time):
         self.processing_time = processing_time
@@ -36,8 +25,8 @@ class Packet():
     def packet_set_index(self, index):
         self.index = index
 
-    def packet_set_arrival_time(self, arrival_time):
-        self.arrival_time = arrival_time
+    def packet_set_arrival_time(self, start_time):
+        self.arrival_time = start_time
 
     def get_packet_detail(self):
         print("src: "+ str(self.src))

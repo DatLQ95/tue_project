@@ -21,7 +21,7 @@ class EdgeComputing():
         self.active = True
         self.vnfs = dict()
         self.get_packet_instance = [env.process(self.get_packet(data_in_link=i)) for i in self.data_links_in]
-        self.send_packet_instance = [env.process(self.send_packet(data_link_out=i)) for i in self.data_links_out]
+        # self.send_packet_instance = [env.process(self.send_packet(data_link_out=i)) for i in self.data_links_out]
 
     # #prepare the request to send
     def process_request(self, request):
@@ -29,20 +29,13 @@ class EdgeComputing():
             print("Got it bro!!!")
             time_taken = self.env.now - request.packet_get_arrival_time()
             print(time_taken)
-        
-        
-    def send_response(out_link, packet):
-        out_link.put(packet)
-        pass
     
     def send_packet(self, data_link_out):
-        yield self.env.timeout(1)
-        if(self.node_index == 2):
-            packet = Packet(dst=1,src=self.node_index, arrival_time=self.env.now)
-            # print(data_link_out)
-            # print(self.node_index)
-            data_link_out.put(packet)
-            # self.send_response(out_link= data_link_out, packet = packet)
+        for i in range(1000):
+            if(self.node_index == 2):
+                packet = Packet(dst=1,src=self.node_index, arrival_time=self.env.now)
+                data_link_out.put(packet)
+                yield self.env.timeout(1)
 
 
     def get_packet(self, data_in_link):
