@@ -1,7 +1,7 @@
 import random
 
 import simpy
-from .Packet import Packet
+from .DataPacket import DataPacket
 from .simulation_settings import random_seed
 
 
@@ -17,11 +17,10 @@ class EdgeComputing():
         self.data_links_out = data_links_out
         self.env = env
         self.active = True
-        self.request = Packet()
         self.active = True
         self.vnfs = dict()
         self.get_packet_instance = [env.process(self.get_packet(data_in_link=i)) for i in self.data_links_in]
-        # self.send_packet_instance = [env.process(self.send_packet(data_link_out=i)) for i in self.data_links_out]
+        self.send_packet_instance = [env.process(self.send_packet(data_link_out=i)) for i in self.data_links_out]
 
     # #prepare the request to send
     def process_request(self, request):
@@ -31,11 +30,13 @@ class EdgeComputing():
             print(time_taken)
     
     def send_packet(self, data_link_out):
+        yield self.env.timeout(250)
         for i in range(1000):
             if(self.node_index == 2):
-                packet = Packet(dst=1,src=self.node_index, arrival_time=self.env.now)
+                packet = DataPacket(dst=1,src=self.node_index, start_time=self.env.now)
                 data_link_out.put(packet)
                 yield self.env.timeout(1)
+                
 
 
     def get_packet(self, data_in_link):

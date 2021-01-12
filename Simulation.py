@@ -66,7 +66,7 @@ class Simulation():
         pass
 
     def simulation_run(self):
-        self.environment.run(1000)
+        self.environment.run(10000)
 
     # if __name__ == '__main__':
     #     main()

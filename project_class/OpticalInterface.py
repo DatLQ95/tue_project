@@ -7,16 +7,13 @@ class Interface():
         self.active = True
         self.get_packet_instance = [env.process(self.data_packet_handler(data_in_link=i)) for i in self.links_from_WSS1]
 
-    def send_control_packets(self):
-        # send 100 control packets
-        pass
-
     def send_data(self, data_links_out, packet):
         data_links_out.put(packet)
         pass
 
     # #prepare the request to send
     def process_request(self, packet):
+        # redefine the RX to EC here!!!
         print("In Interface")
         if(packet.packet_get_dst() == self.node_index):
             print("Send to EC")

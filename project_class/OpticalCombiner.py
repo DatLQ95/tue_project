@@ -15,8 +15,6 @@ class Combiner():
     def run(self, in_link, out_link):
         while (self.active):
             packet = yield in_link.get()
-            print("in combiner " +str(self.node_index))
-            # yield self.env.timeout(delay_time)
             out_link.put(packet)
             
         

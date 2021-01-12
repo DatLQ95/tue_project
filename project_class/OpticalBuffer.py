@@ -2,6 +2,7 @@ from .Packet import Packet
 from .ControlPacket import ControlPacket
 import simpy
 from .simulation_settings import optical_params
+import queue
 
 class Buffer():
     def __init__(self, env, SC_link_in, links_from_EC, links_to_Combiner, SC_link_out, node_index):
@@ -13,9 +14,10 @@ class Buffer():
         self.links_from_EC = links_from_EC
         self.active = True
         self.packet_loss = 0
-        self.TX_buffers = [simpy.Store(self.env, capacity= optical_params.get_buffer_capacity()) for i in range(optical_params.get_TRx_number())]
+        self.TX_buffers = [queue.Queue(maxsize=optical_params.get_buffer_capacity()) for i in range(optical_params.get_TRx_number())]
         self.get_packet_instance = [env.process(self.data_packet_handler(data_in_link=self.links_from_EC[i], TX_buffer=self.TX_buffers[i])) for i in range(len(self.links_from_EC))]
         self.sendControlPackets = env.process(self.send_init_control_packets(data_link_out=self.SC_link_out))
+        self.control_packet_handler_instance = env.process(self.control_packet_handler(SC_link_in=self.SC_link_in, SC_link_out=self.SC_link_out))
 
     def send_data(self, data_links_out, packet):
         data_links_out.put(packet)
@@ -29,7 +31,7 @@ class Buffer():
             # wait for request:
             data_packet = yield data_in_link.get()
             # check if the length of the buffer is reached?
-            if(len(TX_buffer.items) > optical_params.get_buffer_capacity()):
+            if(TX_buffer.qsize() > optical_params.get_buffer_capacity()):
                 # if buffer is full then we increase packet loss
                 self.packet_loss = self.packet_loss + 1
             else: 
@@ -56,16 +58,31 @@ class Buffer():
         check the longest buffer and free channels then assign the longest to the free channel
         """
         # sorting: 
-        buffer_dict = dict()
+        # TODO: finish this part and do slices / test in larger scale of the network
+        buffer_dict = list()
+        print("SC buffer " + str(self.node_index))
         for i in self.TX_buffers:
-            buffer_dict[i] = len(i.items)
-        sorted(buffer_dict.items(), key = lambda kv:(kv[1]), reverse= True)
+            buffer_dict.append([i, i.qsize()])
+        buffer_dict.sort(reverse=True, key=lambda x: x[1])
+        buffer_list = [buffer_dict[i][0] for i in range(len(buffer_dict))]
+
         dst_table = control_packet.packet_get_dst_table()
         count = 0
-        for i in dst_table:
-            if (i == -1):
-
-        pass
+        for i in range(len(dst_table)):
+            if (dst_table[i] == -1):
+                if(not buffer_list[count].empty()):
+                    # send the first item of buffer list here:
+                    print("send data")
+                    packet_send = buffer_list[count].get()
+                    packet_send.packet_set_channel_index(i)
+                    self.send_data(data_links_out=self.links_to_Combiner[i], packet=packet_send)
+                    dst_table[i] = packet_send.packet_get_dst()
+                else :
+                    # if all the buffer is empty:
+                    pass
+            count = count + 1
+        control_packet.packet_set_dst_table(dst_table)
+        self.send_data(data_links_out=SC_link_out, packet=control_packet)
 
     def control_packet_handler(self, SC_link_in, SC_link_out):
         """

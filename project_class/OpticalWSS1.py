@@ -23,10 +23,10 @@ class WSS1():
         print("in WSS1 " + str(self.node_index))
         if(self.permit_to_send[packet.packet_get_channel_index()]):
             print("send to Interface")
-            self.send_data(data_links_out=self.links_to_Interface[0], packet=packet)
+            self.send_data(data_links_out=self.links_to_Interface[packet.packet_get_channel_index()], packet=packet)
         else: 
             print("send to combiner")
-            self.send_data(data_links_out=self.links_to_Combiner[0], packet=packet)
+            self.send_data(data_links_out=self.links_to_Combiner[packet.packet_get_channel_index()], packet=packet)
     
 
     def data_packet_handler(self, data_in_link):
@@ -44,7 +44,6 @@ class WSS1():
         check the control packet dst is here or not
         """
         rx_to_connect = 0
-        print("Got the control packet at " + str(self.env.now))
         dst_table = control_packet.packet_get_dst_table()
         for i in dst_table:
             if (i == self.node_index):
